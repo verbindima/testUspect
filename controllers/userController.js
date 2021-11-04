@@ -1,7 +1,17 @@
 import { validationResult } from 'express-validator';
 import bcrypt from 'bcryptjs';
 import User from "../models/User.js";
+import jwt from 'jsonwebtoken';
+import { secret } from "../config.js" 
 
+
+const generateAccessToken = (id, roles) => {
+    const payload = {
+         id,
+         roles
+    }
+    return jwt.sign(payload, secret, {expiresIn: "24h"})
+}
 
 class userController {
 
@@ -29,7 +39,16 @@ class userController {
     async login(req,res) {
         try {
             const {login, password} = req.body
-            return res.status(400).json({message: 'login Error'})
+            const user = await User.findOne({login})
+            if (!user) {
+                return res.status(400).json({message: `Пользователя ${login} не сушествует`})
+            }
+            const validPassword = bcrypt.compareSync(password, user.password)
+            if (!validPassword) {
+                return res.status(400).json({message:"Введен неправильный пароль"})
+            }
+            const token = generateAccessToken(user._id, user.isAdmin)
+            return res.json({token});
         } catch (e) {
            
             res.status(400).json({message: 'login Error'})
