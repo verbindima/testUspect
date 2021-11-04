@@ -1,11 +1,13 @@
+
 {
   "name": "testuspect",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "api/v1/index.js",
+  "type": "module",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon"
   },
   "repository": {
     "type": "git",
