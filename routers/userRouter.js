@@ -1,8 +1,9 @@
 import Router from 'express';
 import { check } from 'express-validator';
+import controllers from '../controllers/userController.js';
+const { register, login , logout, updateUser, getUser } = controllers;
+
 const router = new Router;
-import { register, login, logout, updateUser, getUser } from './userController.js';
-import roleMiddleware from "./middleware/roleMiddleware.js";
 
 
 router.post('/register', [
@@ -12,7 +13,7 @@ router.post('/login', login);                               //POST] /user/login
 router.post('/logout', logout);                             //[POST] /user/logout
 router.post('/', updateUser);                               //[POST/PATCH] /user/
 
-router.get('/', roleMiddleware(['USER']), getUser);        //[GET] /user/
+router.get('/',  getUser);        //[GET] /user/
 
 
 export default router 
