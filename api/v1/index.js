@@ -1,13 +1,13 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const userRouter = require("./userRouter")
+import express, { json } from 'express';
+import mongoose from 'mongoose';
+import userRouter from "../../routers/userRouter.js";
 
 const PORT =  5050;
 
 
 const app = express();
 
-app.use(express.json())
+app.use(json())
 app.use("/api/v1/user", userRouter)
 
 async function start()  {
