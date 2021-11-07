@@ -3,16 +3,8 @@ import bcrypt from 'bcryptjs'
 import User from "../models/User.js";
 import jwt from 'jsonwebtoken';
 import { secret } from "../config.js" 
+import userService from '../services/userService.js';
 
-
-
-const generateAccessToken = (id, role) => {
-    const payload = {
-         id,
-         role
-    }
-    return jwt.sign(payload, secret, {expiresIn: "24h"})
-}
 const validateAccessToken = token => {
     try {
         const userData = jwt.verify(token, secret);
@@ -31,18 +23,10 @@ class userController {
                 return res.status(401).json({message: "Ошибка валидации при регистрации", errors})
             }
             const {login, password, phone, sex, isAdmin} = req.body
-            const candidate = await User.findOne({login})
-            if (candidate) {
-                return res.status(400).json({message: 'Пользователь с таким именем уже существует'})
-            }
-            const hashPassword = bcrypt.hashSync(password, 7); //Hash password
-            const user = new User({login, password: hashPassword, phone, sex, isAdmin})
-            await user.save()
-            const token = generateAccessToken(user._id, user.isAdmin)
-            
-            res.cookie('accessToken', token, {maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true})
-            
-            return res.json({token, message: "Пользователь успешно зарегистрирован"});
+            const userData = await userService.register(login, password, phone, sex, isAdmin)
+            await userData.user.save()
+            res.cookie('refreshToken', userData.refreshToken, {maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true})
+            return res.status(200).json({userData, message: "Пользователь успешно зарегистрирован"});
         } catch (e) {
             console.log(e)
             res.status(401).json({message: 'registration Error'}) 
@@ -82,7 +66,7 @@ class userController {
 
 
         } catch(e) {
-            res.status(400).json({message: 'logout Error'})
+            res.status(400).json({message: 'updateUser Error'})
         }
     }
     
