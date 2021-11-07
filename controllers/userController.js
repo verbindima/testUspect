@@ -1,16 +1,25 @@
 import { validationResult } from 'express-validator';
-import bcrypt from 'bcryptjs';
+import bcrypt from 'bcryptjs'
 import User from "../models/User.js";
 import jwt from 'jsonwebtoken';
 import { secret } from "../config.js" 
 
 
-const generateAccessToken = (id, roles) => {
+
+const generateAccessToken = (id, role) => {
     const payload = {
          id,
-         roles
+         role
     }
     return jwt.sign(payload, secret, {expiresIn: "24h"})
+}
+const validateAccessToken = token => {
+    try {
+        const userData = jwt.verify(token, secret);
+        return userData;
+    } catch (e) {
+        return null;
+    }
 }
 
 class userController {
@@ -29,7 +38,11 @@ class userController {
             const hashPassword = bcrypt.hashSync(password, 7); //Hash password
             const user = new User({login, password: hashPassword, phone, sex, isAdmin})
             await user.save()
-            return res.json({message: "Пользователь успешно зарегистрирован"});
+            const token = generateAccessToken(user._id, user.isAdmin)
+            
+            res.cookie('accessToken', token, {maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true})
+            
+            return res.json({token, message: "Пользователь успешно зарегистрирован"});
         } catch (e) {
             console.log(e)
             res.status(401).json({message: 'registration Error'}) 
@@ -73,12 +86,19 @@ class userController {
         }
     }
     
-    async getUser(req,res) {
+    async getUser(req, res) {
         try {
-            
+            const token = req.headers.authorization.split(' ')[1]
+        if (!token) {
+            return res.status(403).json({message: "Пользователь не авторизован"})
+        }
+        const decodedData= validateAccessToken(token)
+        const {id} = decodedData
+        const user = await User.findById(id)
+        res.json({user});
             
         } catch (e) {
-             
+             console.log(e);
              res.status(400).json({message: 'User Error'})
         }
     }
