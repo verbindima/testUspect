@@ -65,14 +65,11 @@ class userController {
     
     async getUser(req, res) {
         try {
-            const token = req.headers.authorization.split(' ')[1]
-        if (!token) {
-            return res.status(403).json({message: "Пользователь не авторизован"})
-        }
-        const decodedData= validateAccessToken(token)
-        const {id} = decodedData
-        const user = await User.findById(id)
-        res.json({user});
+            const {refreshToken} = req.cookies;
+            //const token = req.headers.authorization.split(' ')[1]
+        const user = await userService.getUser(refreshToken)
+        
+        res.status(200).json({user});
             
         } catch (e) {
              console.log(e);

@@ -40,5 +40,11 @@ class UserService {
         const userUpdated = await User.findByIdAndUpdate(token.user, userChanges, {new: true})
         return userUpdated;
     }
+    async getUser(refreshToken) {
+        const decodedData = tokenService.validateRefreshToken(refreshToken)
+        const {id} = decodedData
+        const user = await User.findById(id)
+        return user;
+    }
 }
 export default new UserService();

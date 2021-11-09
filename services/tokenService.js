@@ -22,6 +22,14 @@ class TokenService {
             return null;
         }
     }
+    validateRefreshToken(token) {
+        try {
+            const userData = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+            return userData;
+        } catch (e) {
+            return null;
+        }
+    }
     async saveToken(userId, refreshToken) {
         const tokenData = await tokenModel.findOne({user: userId})
         if (tokenData) {
