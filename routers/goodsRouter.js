@@ -17,10 +17,10 @@ body('productPrice', 'Неправильный формат цены')
     return false
 })
 .isNumeric()
-], createGoods)                                 //POST] /goods
-router.get('/', getGoodsAll);                               //GET] /goods
-router.get('/{id}', getGoodsById);                             //[GET] /goods/{id}
-router.delete('/{id}', authMiddleware, deleteGoodsById);      //[DELETE] /goods/{id}
+], authMiddleware(), createGoods)                                 //POST] /goods
+router.get('/', authMiddleware(), getGoodsAll);                               //GET] /goods
+router.get('/:id', authMiddleware(), getGoodsById);                             //[GET] /goods/{id}
+router.delete('/:id', authMiddleware(), deleteGoodsById);      //[DELETE] /goods/{id}
 
 
 

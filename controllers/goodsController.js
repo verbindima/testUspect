@@ -27,16 +27,16 @@ class goodsController {
     }
     async getGoodsById(req, res) {
         try {
-            
-            res.status(200).json({ message: 'Данные обновлены'})
+            const product = await goodsService.getOne(req.params.id); 
+            res.status(200).json({product})
         } catch(e) {
             res.status(400).json({message: 'postGoods Error'})
         }
     }
     async deleteGoodsById(req, res) {
         try {
-            
-            res.status(200).json({ message: 'Данные обновлены'})
+            const product = await goodsService.deleteOne(req.params.id);
+            res.status(200).json(product)
         } catch(e) {
             res.status(400).json({message: 'postGoods Error'})
         }

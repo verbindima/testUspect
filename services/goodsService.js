@@ -8,6 +8,20 @@ class GoodsService {
     async getGoodsAll() {
         return await Goods.find()
     }
+    async getOne(id) {
+        if (!id) {
+            throw new Error('Не указан ID');
+        }
+        const product = await Goods.findById(id); 
+        return product;
+    }
+    async deleteOne(id) {
+        if (!id) {
+            throw new Error('Не указан ID');
+        }
+        const product = await Goods.findByIdAndDelete(id); 
+        return product;
+    }
 }
 
 export default new GoodsService()
