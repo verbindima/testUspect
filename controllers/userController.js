@@ -2,12 +2,11 @@ import { validationResult } from 'express-validator';
 import bcrypt from 'bcryptjs'
 import User from "../models/User.js";
 import jwt from 'jsonwebtoken';
-import { secret } from "../config.js" 
 import userService from '../services/userService.js';
 
 const validateAccessToken = token => {
     try {
-        const userData = jwt.verify(token, secret);
+        const userData = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
         return userData;
     } catch (e) {
         return null;
@@ -46,8 +45,7 @@ class userController {
     async logout(req,res) {
         try {
             const {refreshToken} = req.cookies;
-            console.log(refreshToken)
-            const token = await userService.logout(refreshToken)
+            await userService.logout(refreshToken)
             res.clearCookie('refreshToken')
             return res.status(200).json({message: 'logout'})
 
@@ -55,11 +53,11 @@ class userController {
             res.status(400).json({message: 'logout Error'})
         }
     }
-    async updateUser(req,res) {
+    async updateUser(req, res) {
         try {
-
-
-
+            const {refreshToken} = req.cookies;
+            await userService.updateUser(refreshToken, req.body)
+            res.status(200).json({ message: 'Данные обновлены'})
         } catch(e) {
             res.status(400).json({message: 'updateUser Error'})
         }

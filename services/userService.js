@@ -32,5 +32,13 @@ class UserService {
         const token = await tokenService.removeToken(refreshToken)
         return token
     }
+    async updateUser(refreshToken, userChanges) {
+        const token = await tokenService.findToken(refreshToken)
+        if (!token.user) {    
+            return res.status(400).json({message: `Ошибка токена`})
+        }
+        const userUpdated = await User.findByIdAndUpdate(token.user, userChanges, {new: true})
+        return userUpdated;
+    }
 }
 export default new UserService();
