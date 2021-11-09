@@ -3,6 +3,7 @@ dotenv.config({ path: './.env' })
 import express, { json } from 'express';
 import mongoose from 'mongoose';
 import userRouter from "../../routers/userRouter.js";
+import goodsRouter from "../../routers/goodsRouter.js";
 import cookieParser from 'cookie-parser'
 const PORT =  process.env.PORT || 5000;
 const app = express();
@@ -10,6 +11,7 @@ const app = express();
 app.use(json())
 app.use(cookieParser())
 app.use("/api/v1/user", userRouter)
+app.use("/api/v1/goods", goodsRouter)
 
 async function start()  {
     try {
