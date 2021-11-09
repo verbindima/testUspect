@@ -11,8 +11,7 @@ router.post('/register', [
 ], register)
 router.post('/login', login);                               //POST] /user/login
 router.post('/logout', logout);                             //[POST] /user/logout
-router.patch('/', authMiddleware, updateUser);                               //[POST/PATCH] /user/
-router.get('/', authMiddleware, getUser);        //[GET] /user/
-
+router.patch('/', authMiddleware(), updateUser);                               //[POST/PATCH] /user/
+router.get('/', authMiddleware(), getUser);        //[GET] /user/
 
 export default router 
