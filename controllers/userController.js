@@ -36,19 +36,11 @@ class userController {
     async login(req,res) {
         try {
             const {login, password} = req.body
-            const user = await User.findOne({login})
-            if (!user) {
-                return res.status(400).json({message: `Пользователя ${login} не сушествует`})
-            }
-            const validPassword = bcrypt.compareSync(password, user.password)
-            if (!validPassword) {
-                return res.status(400).json({message:"Введен неправильный пароль"})
-            }
-            const token = generateAccessToken(user._id, user.isAdmin)
-            return res.json({token});
+            const userData = await userService.login(login, password)
+            res.cookie('refreshToken', userData.refreshToken, {maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true})
+            return res.status(200).json({accessToken: userData.accessToken, refreshToken: userData.refreshToken});
         } catch (e) {
-           
-            res.status(400).json({message: 'login Error'})
+           res.status(400).json({message: 'login Error'})
         }
     }
     async logout(req,res) {
