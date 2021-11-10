@@ -1,3 +1,4 @@
+import { query } from "express";
 import Goods from "../models/Goods.js";
 
 class GoodsService {
@@ -5,8 +6,10 @@ class GoodsService {
         const createdProduct = await Goods.create({...product})
         return createdProduct;
     }
-    async getGoodsAll() {
-        return await Goods.find()
+    async getGoodsAll(start, limit) {
+        const goods = await Goods.find()
+        .limit(limit).skip(start - 1)
+        return goods
     }
     async getOne(id) {
         if (!id) {

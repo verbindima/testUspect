@@ -18,10 +18,13 @@ class goodsController {
     }
     async getGoodsAll(req, res) {
         try { 
-            const goods = await goodsService.getGoodsAll()
+            const start = parseInt(req.query.start)
+            const limit = parseInt(req.query.limit);
+            const goods = await goodsService.getGoodsAll(start, limit)
             
             res.status(200).json({goods})
         } catch(e) {
+            console.log(e)
             res.status(400).json({message: 'postGoods Error'})
         }
     }
