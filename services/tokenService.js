@@ -1,51 +1,55 @@
-import tokenModel from "../models/Token.js"
-import jwt from 'jsonwebtoken';
+import tokenModel from '../models/Token.js'
+import jwt from 'jsonwebtoken'
 
 class TokenService {
-    generateTokens(id, isAdmin) {
-        const payload = {
-            id,
-            isAdmin
-       }
-        const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET, {expiresIn: '1h'})
-        const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {expiresIn: '30h'})
-        return {
-            accessToken,
-            refreshToken
-        }
+  generateTokens(id, isAdmin) {
+    const payload = {
+      id,
+      isAdmin,
     }
-    validateAccessToken(token) {
-        try {
-            const userData = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
-            return userData;
-        } catch (e) {
-            return null;
-        }
+    const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET, {
+      expiresIn: '1h',
+    })
+    const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
+      expiresIn: '30h',
+    })
+    return {
+      accessToken,
+      refreshToken,
     }
-    validateRefreshToken(token) {
-        try {
-            const userData = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
-            return userData;
-        } catch (e) {
-            return null;
-        }
+  }
+  validateAccessToken(token) {
+    try {
+      const userData = jwt.verify(token, process.env.JWT_ACCESS_SECRET)
+      return userData
+    } catch (e) {
+      return null
     }
-    async saveToken(userId, refreshToken) {
-        const tokenData = await tokenModel.findOne({user: userId})
-        if (tokenData) {
-            tokenData.refreshToken = refreshToken;
-            return tokenData.save();
-        }
-        const token = await tokenModel.create({user: userId, refreshToken})
-        return token;
-    }   
-    async removeToken(refreshToken) {
-        const tokenData = await tokenModel.deleteOne({refreshToken})
-        return tokenData;
+  }
+  validateRefreshToken(token) {
+    try {
+      const userData = jwt.verify(token, process.env.JWT_REFRESH_SECRET)
+      return userData
+    } catch (e) {
+      return null
     }
-    async findToken(refreshToken) {
-        const tokenData = await tokenModel.findOne({refreshToken})
-        return tokenData;
+  }
+  async saveToken(userId, refreshToken) {
+    const tokenData = await tokenModel.findOne({ user: userId })
+    if (tokenData) {
+      tokenData.refreshToken = refreshToken
+      return tokenData.save()
     }
+    const token = await tokenModel.create({ user: userId, refreshToken })
+    return token
+  }
+  async removeToken(refreshToken) {
+    const tokenData = await tokenModel.deleteOne({ refreshToken })
+    return tokenData
+  }
+  async findToken(refreshToken) {
+    const tokenData = await tokenModel.findOne({ refreshToken })
+    return tokenData
+  }
 }
-export default new TokenService();
+export default new TokenService()
